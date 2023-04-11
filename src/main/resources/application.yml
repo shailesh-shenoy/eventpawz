@@ -1,0 +1,18 @@
+spring:
+  config:
+    import: env.properties
+hibernate:
+  url: jdbc:postgresql://localhost:5432/eventpaws
+  driver: org.postgresql.Driver
+  user: ${DB_USER}
+  password: ${DB_PASSWORD}
+  dialect: org.hibernate.dialect.PostgreSQLDialect
+  showsql: true
+  formatsql: true
+  hbm2ddlauto: update
+
+server:
+  port: 8081
+
+
+

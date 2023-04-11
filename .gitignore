@@ -1,4 +1,8 @@
+
 HELP.md
+### Sensitive stuff ###
+src/main/resources/env.properties
+
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -32,5 +36,3 @@ build/
 ### VS Code ###
 .vscode/
 
-### User-specific stuff ###
-src/main/resources/application.yml
