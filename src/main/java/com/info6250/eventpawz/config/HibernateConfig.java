@@ -1,5 +1,6 @@
 package com.info6250.eventpawz.config;
 
+import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.cfg.Environment;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+@Getter
 @Setter
 @Configuration
 @EnableTransactionManagement
