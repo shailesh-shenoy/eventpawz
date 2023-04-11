@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### User-specific stuff ###
-**/application.yml
+src/main/resources/application.yml

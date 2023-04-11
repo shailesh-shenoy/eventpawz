@@ -23,7 +23,7 @@ public class AppUserDao {
     }
 
     public List<AppUser> findAll() {
-        return sessionFactory.getCurrentSession().createQuery("from AppUser").list();
+        return sessionFactory.getCurrentSession().createQuery("from AppUser", AppUser.class).list();
     }
 
     public AppUser findByUsername(String username) {
