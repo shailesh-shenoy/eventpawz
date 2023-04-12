@@ -11,7 +11,7 @@ import java.util.List;
 //Create methods for CRUD operations
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 public class AppUserController {
     private final AppUserDao appUserDao;
 

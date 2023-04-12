@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional
@@ -32,8 +34,12 @@ public class AppUserDao {
         return sessionFactory.getCurrentSession().createQuery(criteriaQuery).getResultList();
     }
 
-    public AppUser findByUsername(String username) {
-        return sessionFactory.getCurrentSession().get(AppUser.class, username);
+    public Optional<AppUser> findByUsername(String username) {
+        CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<AppUser> criteriaQuery = criteriaBuilder.createQuery(AppUser.class);
+        Root<AppUser> root = criteriaQuery.from(AppUser.class);
+        criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("username"), username));
+        return sessionFactory.getCurrentSession().createQuery(criteriaQuery).uniqueResultOptional();
     }
 
     public AppUser findByEmail(String email) {
