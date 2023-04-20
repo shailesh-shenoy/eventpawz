@@ -42,8 +42,12 @@ public class AppUserDao {
         return sessionFactory.getCurrentSession().createQuery(criteriaQuery).uniqueResultOptional();
     }
 
-    public AppUser findByEmail(String email) {
-        return sessionFactory.getCurrentSession().get(AppUser.class, email);
+    public Optional<AppUser> findByEmail(String email) {
+        CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<AppUser> criteriaQuery = criteriaBuilder.createQuery(AppUser.class);
+        Root<AppUser> root = criteriaQuery.from(AppUser.class);
+        criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("email"), email));
+        return sessionFactory.getCurrentSession().createQuery(criteriaQuery).uniqueResultOptional();
     }
 
     //Update user
