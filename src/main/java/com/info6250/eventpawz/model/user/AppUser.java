@@ -1,9 +1,7 @@
 package com.info6250.eventpawz.model.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.info6250.eventpawz.model.event.Event;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -46,6 +45,11 @@ public class AppUser implements UserDetails {
     @Basic(optional = false)
     private boolean enabled;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
+    private Set<Event> events;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -65,5 +69,5 @@ public class AppUser implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return true;
     }
-    
+
 }

@@ -1,10 +1,12 @@
 package com.info6250.eventpawz.controller;
 
 import com.info6250.eventpawz.model.auth.PasswordChangeRequest;
+import com.info6250.eventpawz.model.event.EventDto;
 import com.info6250.eventpawz.model.user.AppUserDao;
 import com.info6250.eventpawz.model.user.AppUserDto;
 import com.info6250.eventpawz.model.user.FileUploadResponse;
 import com.info6250.eventpawz.service.auth.AuthenticationService;
+import com.info6250.eventpawz.service.event.EventService;
 import com.info6250.eventpawz.util.FileUploadUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,6 +31,8 @@ public class AppUserController {
     private final ModelMapper modelMapper;
 
     private final AuthenticationService authenticationService;
+
+    private final EventService eventService;
 
     @GetMapping
     public ResponseEntity<List<AppUserDto>> getAllAppUsers() {
@@ -87,6 +91,17 @@ public class AppUserController {
         return appUser.map(user -> ResponseEntity.ok(modelMapper.map(user, AppUserDto.class))).orElse(ResponseEntity.badRequest().build());
     }
 
+    @GetMapping("/{id}/events")
+    public ResponseEntity<List<EventDto>> getEventsByAppUser(@PathVariable("id") Long id) {
+        var appUser = appUserDao.findById(id);
+        if (appUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        ;
+        return ResponseEntity.ok(eventService.getUserEvents(appUser.get()));
+
+    }
+    //@PostMapping("/{id}/events")
     // ! Commented out because new users should be added via the register API
     /*
     @PostMapping
