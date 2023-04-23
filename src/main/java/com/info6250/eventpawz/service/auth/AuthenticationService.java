@@ -3,6 +3,7 @@ package com.info6250.eventpawz.service.auth;
 import com.info6250.eventpawz.config.jwt.JWTService;
 import com.info6250.eventpawz.model.auth.AuthenticationResponse;
 import com.info6250.eventpawz.model.auth.LoginRequest;
+import com.info6250.eventpawz.model.auth.PasswordChangeRequest;
 import com.info6250.eventpawz.model.auth.RegisterRequest;
 import com.info6250.eventpawz.model.user.AppUser;
 import com.info6250.eventpawz.model.user.AppUserDao;
@@ -52,5 +53,20 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
+    }
+
+    public AppUser changePassword(AppUser appUser, PasswordChangeRequest passwordChangeRequest) {
+        if (passwordChangeRequest.oldPassword == null || passwordChangeRequest.oldPassword.isBlank()) {
+            throw new IllegalArgumentException("Old password is required");
+        } else if (passwordChangeRequest.oldPassword.equals(passwordChangeRequest.newPassword)) {
+            throw new IllegalArgumentException("New password must be different from old password");
+        } else if (!passwordEncoder.matches(passwordChangeRequest.oldPassword, appUser.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        } else if (passwordChangeRequest.newPassword == null || passwordChangeRequest.newPassword.isBlank()) {
+            throw new IllegalArgumentException("New password is required");
+        } else {
+            appUser.setPassword(passwordEncoder.encode(passwordChangeRequest.newPassword));
+            return appUserDao.update(appUser);
+        }
     }
 }

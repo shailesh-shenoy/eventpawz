@@ -1,7 +1,7 @@
 package com.info6250.eventpawz.model.user;
 
+import lombok.RequiredArgsConstructor;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,17 +13,18 @@ import java.util.Optional;
 
 @Repository
 @Transactional
+@RequiredArgsConstructor
 public class AppUserDao {
-
+    
     private final SessionFactory sessionFactory;
 
-    @Autowired
-    public AppUserDao(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
 
     public void save(AppUser appUser) {
         sessionFactory.getCurrentSession().save(appUser);
+    }
+
+    public Optional<AppUser> findById(Long id) {
+        return sessionFactory.getCurrentSession().byId(AppUser.class).loadOptional(id);
     }
 
     public List<AppUser> findAll() {
@@ -51,8 +52,21 @@ public class AppUserDao {
     }
 
     //Update user
-    public void update(AppUser appUser) {
+    public AppUser update(AppUser appUser, AppUserDto appUserDto) {
+        if (appUserDto.getEmail() != null && !appUserDto.getEmail().isBlank()) appUser.setEmail(appUserDto.getEmail());
+        if (appUserDto.getName() != null && !appUserDto.getName().isBlank()) appUser.setName(appUserDto.getName());
+        if (appUserDto.getAvatar() != null && !appUserDto.getAvatar().isBlank())
+            appUser.setAvatar(appUserDto.getAvatar());
+        if (appUserDto.getRole() != null) appUser.setRole(appUserDto.getRole());
+        if (appUserDto.getEnabled() != null) appUser.setEnabled(appUserDto.getEnabled());
         sessionFactory.getCurrentSession().update(appUser);
+        return appUser;
+    }
+
+    // *Update persistent user instance
+    public AppUser update(AppUser appUser) {
+        sessionFactory.getCurrentSession().update(appUser);
+        return appUser;
     }
 
     //Delete user
