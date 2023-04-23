@@ -9,6 +9,7 @@ import com.info6250.eventpawz.util.FileUploadUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,8 +43,10 @@ public class AppUserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<AppUserDto> updateAppUser(@PathVariable("id") Long id, @RequestBody AppUserDto appUserDto) {
-        System.out.println("Srsly");
+    public ResponseEntity<AppUserDto> updateAppUser(@PathVariable("id") Long id, @RequestBody AppUserDto appUserDto, Authentication authentication) {
+        if (!authenticationService.isSiteAdmin(authentication) && !authenticationService.isCurrentUser(authentication, id)) {
+            return ResponseEntity.status(403).build();
+        }
         return appUserDao.findById(id).map(appUser -> {
             appUser = appUserDao.update(appUser, appUserDto);
             return ResponseEntity.ok(modelMapper.map(appUser, AppUserDto.class));

@@ -11,6 +11,7 @@ import com.info6250.eventpawz.model.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -68,5 +69,20 @@ public class AuthenticationService {
             appUser.setPassword(passwordEncoder.encode(passwordChangeRequest.newPassword));
             return appUserDao.update(appUser);
         }
+    }
+
+    public boolean isSiteAdmin(Authentication authentication) {
+        if (authentication == null) return false;
+        var appUser = (AppUser) authentication.getPrincipal();
+        if (appUser == null) return false;
+        return appUser.getRole() == Role.SITE_ADMIN;
+    }
+
+    public boolean isCurrentUser(Authentication authentication, Long id) {
+        if (authentication == null) return false;
+        var appUser = (AppUser) authentication.getPrincipal();
+        if (appUser == null) return false;
+
+        return appUser.getId().equals(id);
     }
 }
