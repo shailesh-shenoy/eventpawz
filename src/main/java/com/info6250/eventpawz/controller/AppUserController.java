@@ -2,6 +2,7 @@ package com.info6250.eventpawz.controller;
 
 import com.info6250.eventpawz.model.auth.PasswordChangeRequest;
 import com.info6250.eventpawz.model.event.EventDto;
+import com.info6250.eventpawz.model.event.EventTypeDao;
 import com.info6250.eventpawz.model.user.AppUserDao;
 import com.info6250.eventpawz.model.user.AppUserDto;
 import com.info6250.eventpawz.model.user.FileUploadResponse;
@@ -27,6 +28,8 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 public class AppUserController {
     private final AppUserDao appUserDao;
+
+    private final EventTypeDao eventTypeDao;
 
     private final ModelMapper modelMapper;
 
@@ -101,7 +104,27 @@ public class AppUserController {
         return ResponseEntity.ok(eventService.getUserEvents(appUser.get()));
 
     }
-    //@PostMapping("/{id}/events")
+
+    @PostMapping("/{id}/events")
+    public ResponseEntity<EventDto> createEvent(@PathVariable("id") Long id, @RequestBody EventDto eventDto, Authentication authentication) {
+        if (!authenticationService.isSiteAdmin(authentication) && !authenticationService.isCurrentUser(authentication, id)) {
+            return ResponseEntity.status(403).build();
+        }
+        
+        var appUser = appUserDao.findById(id);
+        if (appUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        String eventTypeInput = "";
+        if (eventDto.getEventType() == null || eventDto.getEventType().getType() == null || eventDto.getEventType().getType().isBlank()) {
+            eventTypeInput = "Other";
+        } else {
+            eventTypeInput = eventDto.getEventType().getType();
+        }
+        var eventType = eventTypeDao.findByType(eventTypeInput).orElseGet(() -> eventTypeDao.findByType("Other").orElseGet(() -> null));
+        return ResponseEntity.ok(eventService.createEventForUser(appUser.get(), eventDto, eventType));
+    }
+
     // ! Commented out because new users should be added via the register API
     /*
     @PostMapping

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional
@@ -25,5 +26,13 @@ public class EventDao {
         criteriaQuery.select(root);
 
         return sessionFactory.getCurrentSession().createQuery(criteriaQuery).getResultList();
+    }
+
+    public Optional<Event> findById(Long id) {
+        return sessionFactory.getCurrentSession().byId(Event.class).loadOptional(id);
+    }
+
+    public void update(Event event) {
+        sessionFactory.getCurrentSession().merge(event);
     }
 }

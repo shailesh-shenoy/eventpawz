@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -21,7 +22,7 @@ public class EventService {
     private final ModelMapper modelMapper;
     private final SessionFactory sessionFactory;
 
-    public Event createEventForUser(AppUser appUser, EventDto eventDto, EventType eventType) {
+    public EventDto createEventForUser(AppUser appUser, EventDto eventDto, EventType eventType) {
 
         Event event = Event.builder()
                 .eventName(eventDto.getEventName())
@@ -31,7 +32,7 @@ public class EventService {
                 .createdBy(appUser)
                 .build();
         eventDao.save(event);
-        return event;
+        return modelMapper.map(event, EventDto.class);
     }
 
     public List<EventDto> getAllEvents() {
@@ -40,7 +41,19 @@ public class EventService {
 
     public List<EventDto> getUserEvents(AppUser appUser) {
         sessionFactory.getCurrentSession().refresh(appUser);
-        Hibernate.initialize(appUser.getEvents());
-        return appUser.getEvents().stream().map(event -> modelMapper.map(event, EventDto.class)).toList();
+        Hibernate.initialize(appUser.getCreatedEvents());
+        return appUser.getCreatedEvents().stream().map(event -> modelMapper.map(event, EventDto.class)).toList();
+    }
+
+    public Optional<EventDto> getEventById(Long id) {
+        return eventDao.findById(id).map(event -> modelMapper.map(event, EventDto.class));
+    }
+
+    public EventDto registerUserForEvent(AppUser appUser, Event event) {
+//        sessionFactory.getCurrentSession().refresh(appUser);
+//        sessionFactory.getCurrentSession().refresh(event);
+        event.getAttendees().add(appUser);
+        sessionFactory.getCurrentSession().saveOrUpdate(event);
+        return modelMapper.map(event, EventDto.class);
     }
 }

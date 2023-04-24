@@ -1,12 +1,10 @@
 package com.info6250.eventpawz.model.event;
 
 import com.info6250.eventpawz.model.user.AppUser;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Data
 @Builder
@@ -32,4 +30,12 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private AppUser createdBy;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "event_attendees",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<AppUser> attendees;
 }

@@ -47,8 +47,14 @@ public class AppUser implements UserDetails {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
-    private Set<Event> events;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "createdBy", cascade = CascadeType.ALL)
+    private Set<Event> createdEvents;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "attendees")
+    private Set<Event> attendedEvents;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

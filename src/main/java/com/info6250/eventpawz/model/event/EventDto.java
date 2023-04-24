@@ -1,11 +1,11 @@
 package com.info6250.eventpawz.model.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.info6250.eventpawz.model.user.AppUserDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.Set;
 
 @Data
 @Builder
@@ -22,8 +22,17 @@ public class EventDto {
 
     private String coverImage;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnoreProperties({"createdEvents", "attendedEvents"})
     private AppUserDto createdBy;
-    
+
     private EventTypeDto eventType;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnoreProperties({"createdEvents", "attendedEvents"})
+    private Set<AppUserDto> attendees;
 }

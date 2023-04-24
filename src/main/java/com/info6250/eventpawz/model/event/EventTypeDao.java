@@ -30,9 +30,10 @@ public class EventTypeDao {
         return sessionFactory.getCurrentSession().byId(EventType.class).loadOptional(id);
     }
 
-    public Optional<EventType> findByName(String name) {
-        return sessionFactory.getCurrentSession().byNaturalId(EventType.class).using("name", name).loadOptional();
+
+    public Optional<EventType> findByType(String eventTypeInput) {
+        return sessionFactory.getCurrentSession().createQuery("from EventType where type = :type", EventType.class)
+                .setParameter("type", eventTypeInput)
+                .uniqueResultOptional();
     }
-
-
 }

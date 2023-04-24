@@ -1,7 +1,11 @@
 package com.info6250.eventpawz.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.info6250.eventpawz.model.event.EventDto;
 import lombok.Data;
+
+import java.util.Set;
 
 @Data
 public class AppUserDto {
@@ -23,4 +27,12 @@ public class AppUserDto {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Boolean enabled;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnoreProperties({"createdBy", "attendees"})
+    private Set<EventDto> createdEvents;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnoreProperties({"createdBy", "attendees"})
+    private Set<EventDto> attendedEvents;
 }
