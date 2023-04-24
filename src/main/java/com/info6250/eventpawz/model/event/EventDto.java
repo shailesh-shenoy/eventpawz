@@ -34,6 +34,8 @@ public class EventDto {
     @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime eventEndTime;
 
+    private String status;
+
     private String virtualMeetLink;
 
     private String address;

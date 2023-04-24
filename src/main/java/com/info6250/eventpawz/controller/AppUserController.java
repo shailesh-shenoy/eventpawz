@@ -66,7 +66,10 @@ public class AppUserController {
 
 
     @PutMapping("/{id}/avatar")
-    public ResponseEntity<FileUploadResponse> uploadAvatar(@PathVariable("id") Long id, @RequestParam("file") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<FileUploadResponse> uploadAvatar(@PathVariable("id") Long id, @RequestParam("file") MultipartFile multipartFile, Authentication authentication) throws IOException {
+        if (!authenticationService.isSiteAdmin(authentication) && !authenticationService.isCurrentUser(authentication, id)) {
+            return ResponseEntity.status(403).build();
+        }
         var appUser = appUserDao.findById(id);
         if (appUser.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -89,7 +92,10 @@ public class AppUserController {
     }
 
     @PutMapping("/{id}/password") // *Change password
-    public ResponseEntity<AppUserDto> changePassword(@PathVariable("id") Long id, @RequestBody PasswordChangeRequest passwordChangeRequest) {
+    public ResponseEntity<AppUserDto> changePassword(@PathVariable("id") Long id, @RequestBody PasswordChangeRequest passwordChangeRequest, Authentication authentication) {
+        if (!authenticationService.isSiteAdmin(authentication) && !authenticationService.isCurrentUser(authentication, id)) {
+            return ResponseEntity.status(403).build();
+        }
         var appUser = appUserDao.findById(id);
         if (appUser.isEmpty()) {
             return ResponseEntity.notFound().build();

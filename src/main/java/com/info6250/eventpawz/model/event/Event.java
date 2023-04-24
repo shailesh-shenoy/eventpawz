@@ -2,6 +2,7 @@ package com.info6250.eventpawz.model.event;
 
 import com.info6250.eventpawz.model.user.AppUser;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -38,6 +39,9 @@ public class Event {
 
     @Column
     private LocalTime eventEndTime;
+
+    @Formula(value = "(CASE WHEN (eventDate < current_date OR (eventDate = current_date AND eventEndTime < current_time)) THEN 'PAST' ELSE (CASE WHEN (eventDate = current_date AND eventStartTime <= current_time AND eventEndTime >= current_time) THEN 'ONGOING' ELSE 'UPCOMING' END) END)")
+    private String status;
 
     @Column
     private String virtualMeetLink;
