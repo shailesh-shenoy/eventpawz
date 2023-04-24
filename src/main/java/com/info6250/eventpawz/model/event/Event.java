@@ -4,6 +4,8 @@ import com.info6250.eventpawz.model.user.AppUser;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Set;
 
 @Data
@@ -27,6 +29,30 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private EventType eventType;
+
+    @Column
+    private LocalDate eventDate;
+
+    @Column
+    private LocalTime eventStartTime;
+
+    @Column
+    private LocalTime eventEndTime;
+
+    @Column
+    private String virtualMeetLink;
+
+    @Column
+    private String address;
+
+    @Column
+    private String city;
+
+    @Column
+    private String state;
+
+    @Column
+    private String zipCode;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private AppUser createdBy;

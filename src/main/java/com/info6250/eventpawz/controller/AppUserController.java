@@ -154,6 +154,39 @@ public class AppUserController {
         return ResponseEntity.ok(eventService.updateEventForUser(appUser.get(), event.get(), eventType, eventDto));
     }
 
+    @PutMapping("/{id}/events/{eventId}/cover")
+    public ResponseEntity<FileUploadResponse> uploadEventCover(@PathVariable("id") Long userId, @PathVariable("eventId") Long eventId, @RequestParam("file") MultipartFile multipartFile, Authentication authentication) throws IOException {
+        if (!authenticationService.isSiteAdmin(authentication) && !authenticationService.isCurrentUser(authentication, userId)) {
+            return ResponseEntity.status(403).build();
+        }
+        var appUser = appUserDao.findById(userId);
+        if (appUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        var event = eventDao.findById(eventId);
+        if (event.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!Objects.equals(event.get().getCreatedBy().getId(), userId)) {
+            return ResponseEntity.status(403).build();
+        }
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        String originalFileName = multipartFile.getOriginalFilename();
+        if (originalFileName == null || originalFileName.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String fileName = "images/" + appUser.get().getUsername() + "/event_" + eventId + "." + originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
+        String filePath = FileUploadUtil.saveFile(fileName, multipartFile);
+
+        event.get().setCoverImage(fileName);
+        eventDao.update(event.get());
+
+        return ResponseEntity.ok(new FileUploadResponse(fileName, filePath, multipartFile.getSize()));
+    }
+
     // ! Commented out because new users should be added via the register API
     /*
     @PostMapping

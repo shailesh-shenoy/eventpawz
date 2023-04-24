@@ -67,6 +67,31 @@ public class EventService {
         if (eventType != null) {
             event.setEventType(eventType);
         }
+        if (eventDto.getEventDate() != null) {
+            event.setEventDate(eventDto.getEventDate());
+        }
+        if (eventDto.getEventStartTime() != null) {
+            event.setEventStartTime(eventDto.getEventStartTime());
+        }
+        if (eventDto.getEventEndTime() != null) {
+            event.setEventEndTime(eventDto.getEventEndTime());
+        }
+        if (eventDto.getAddress() != null) {
+            event.setAddress(eventDto.getAddress());
+        }
+        if (eventDto.getCity() != null) {
+            event.setCity(eventDto.getCity());
+        }
+        if (eventDto.getState() != null) {
+            event.setState(eventDto.getState());
+        }
+        if (eventDto.getZipCode() != null) {
+            event.setZipCode(eventDto.getZipCode());
+        }
+        if (eventDto.getVirtualMeetLink() != null) {
+            event.setVirtualMeetLink(eventDto.getVirtualMeetLink());
+        }
+
         eventDao.update(event);
         return modelMapper.map(event, EventDto.class);
     }
