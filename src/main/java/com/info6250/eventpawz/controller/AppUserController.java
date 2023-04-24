@@ -1,6 +1,7 @@
 package com.info6250.eventpawz.controller;
 
 import com.info6250.eventpawz.model.auth.PasswordChangeRequest;
+import com.info6250.eventpawz.model.event.EventDao;
 import com.info6250.eventpawz.model.event.EventDto;
 import com.info6250.eventpawz.model.event.EventTypeDao;
 import com.info6250.eventpawz.model.user.AppUserDao;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 //Create a new controller class called AppUserController
 //Add the @RestController annotation to the class
@@ -28,6 +30,8 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 public class AppUserController {
     private final AppUserDao appUserDao;
+
+    private final EventDao eventDao;
 
     private final EventTypeDao eventTypeDao;
 
@@ -110,7 +114,7 @@ public class AppUserController {
         if (!authenticationService.isSiteAdmin(authentication) && !authenticationService.isCurrentUser(authentication, id)) {
             return ResponseEntity.status(403).build();
         }
-        
+
         var appUser = appUserDao.findById(id);
         if (appUser.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -123,6 +127,31 @@ public class AppUserController {
         }
         var eventType = eventTypeDao.findByType(eventTypeInput).orElseGet(() -> eventTypeDao.findByType("Other").orElseGet(() -> null));
         return ResponseEntity.ok(eventService.createEventForUser(appUser.get(), eventDto, eventType));
+    }
+
+    @PatchMapping("/{id}/events/{eventId}")
+    public ResponseEntity<EventDto> updateEvent(@PathVariable("id") Long userId, @PathVariable("eventId") Long eventId, @RequestBody EventDto eventDto, Authentication authentication) {
+        if (!authenticationService.isSiteAdmin(authentication) && !authenticationService.isCurrentUser(authentication, userId)) {
+            return ResponseEntity.status(403).build();
+        }
+        var appUser = appUserDao.findById(userId);
+        if (appUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        var event = eventDao.findById(eventId);
+        if (event.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!Objects.equals(event.get().getCreatedBy().getId(), userId)) {
+            return ResponseEntity.status(403).build();
+        }
+        String eventTypeInput = "";
+        if (eventDto.getEventType() != null && eventDto.getEventType().getType() != null && !eventDto.getEventType().getType().isBlank()) {
+            eventTypeInput = eventDto.getEventType().getType();
+        }
+        var eventType = eventTypeDao.findByType(eventTypeInput).orElseGet(() -> null);
+        return ResponseEntity.ok(eventService.updateEventForUser(appUser.get(), event.get(), eventType, eventDto));
     }
 
     // ! Commented out because new users should be added via the register API

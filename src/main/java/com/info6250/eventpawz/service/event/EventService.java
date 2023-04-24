@@ -56,4 +56,18 @@ public class EventService {
         sessionFactory.getCurrentSession().saveOrUpdate(event);
         return modelMapper.map(event, EventDto.class);
     }
+
+    public EventDto updateEventForUser(AppUser appUser, Event event, EventType eventType, EventDto eventDto) {
+        if (eventDto.getEventName() != null) {
+            event.setEventName(eventDto.getEventName());
+        }
+        if (eventDto.getDescription() != null) {
+            event.setDescription(eventDto.getDescription());
+        }
+        if (eventType != null) {
+            event.setEventType(eventType);
+        }
+        eventDao.update(event);
+        return modelMapper.map(event, EventDto.class);
+    }
 }

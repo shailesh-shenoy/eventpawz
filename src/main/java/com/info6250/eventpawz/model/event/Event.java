@@ -28,7 +28,7 @@ public class Event {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private EventType eventType;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     private AppUser createdBy;
 
     @EqualsAndHashCode.Exclude

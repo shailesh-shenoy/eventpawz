@@ -33,6 +33,6 @@ public class EventDao {
     }
 
     public void update(Event event) {
-        sessionFactory.getCurrentSession().merge(event);
+        sessionFactory.getCurrentSession().update(event);
     }
 }
