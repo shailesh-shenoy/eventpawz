@@ -24,13 +24,9 @@ public class EventService {
 
     public EventDto createEventForUser(AppUser appUser, EventDto eventDto, EventType eventType) {
 
-        Event event = Event.builder()
-                .eventName(eventDto.getEventName())
-                .description(eventDto.getDescription())
-                .coverImage(eventDto.getCoverImage())
-                .eventType(eventType)
-                .createdBy(appUser)
-                .build();
+        Event event = modelMapper.map(eventDto, Event.class);
+        event.setEventType(eventType);
+        event.setCreatedBy(appUser);
         eventDao.save(event);
         return modelMapper.map(event, EventDto.class);
     }
