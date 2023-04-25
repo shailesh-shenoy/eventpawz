@@ -37,7 +37,9 @@ public class AuthenticationService {
         appUserDao.save(appUser);
         var jwtToken = jwtService.generateToken(appUser);
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .username(appUser.getUsername())
+                .id(appUser.getId().toString())
+                .accessToken(jwtToken)
                 .build();
     }
 
@@ -52,7 +54,9 @@ public class AuthenticationService {
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(appUser);
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .username(appUser.getUsername())
+                .id(appUser.getId().toString())
+                .accessToken(jwtToken)
                 .build();
     }
 
